@@ -57,25 +57,26 @@ class CpStockChart:
         self.objStockChart.SetInputValue(4, count)  # 최근 count개
 
         if ohlcv_only:
-            self.objStockChart.SetInputValue(5, [0, 2, 3, 4, 5, 8])  # 요청항목 - 날짜,시가,고가,저가,종가,거래량
+            self.objStockChart.SetInputValue(
+                5, [0, 2, 3, 4, 5, 8])  # 요청항목 - 날짜,시가,고가,저가,종가,거래량
             rq_column = ('date', 'open', 'high', 'low', 'close', 'volume')
         else:
             # 요청항목
-            self.objStockChart.SetInputValue(5, [0, # 날짜
-                                                2, # 시가
-                                                3, # 고가
-                                                4, # 저가
-                                                5, # 종가
-                                                8, # 거래량
-                                                12,  #상장주식수
-                                                14,  # 외국인주문한도수량
-                                                16,  # 외국인현보유수량
-                                                17,  # 외국인현보유비율
-                                                20,  # 기관순매수
-                                                21,  # 기관누적순매수
-                                                ])
+            self.objStockChart.SetInputValue(5, [0,  # 날짜
+                                                 2,  # 시가
+                                                 3,  # 고가
+                                                 4,  # 저가
+                                                 5,  # 종가
+                                                 8,  # 거래량
+                                                 12,  # 상장주식수
+                                                 14,  # 외국인주문한도수량
+                                                 16,  # 외국인현보유수량
+                                                 17,  # 외국인현보유비율
+                                                 20,  # 기관순매수
+                                                 21,  # 기관누적순매수
+                                                 ])
             # 요청한 항목들을 튜플로 만들어 사용
-            rq_column = ('date', 'open', 'high', 'low', 'close', 'volume', 
+            rq_column = ('date', 'open', 'high', 'low', 'close', 'volume',
                          '상장주식수', '외국인주문한도수량', '외국인현보유수량', '외국인현보유비율', '기관순매수', '기관누적순매수')
 
         self.objStockChart.SetInputValue(6, dwm)  # '차트 주기 - 일/주/월
@@ -92,10 +93,12 @@ class CpStockChart:
             time.sleep(0.25)  # 시간당 RQ 제한으로 인해 장애가 발생하지 않도록 딜레이를 줌
 
             rcv_batch_len = self.objStockChart.GetHeaderValue(3)  # 받아온 데이터 개수
-            rcv_batch_len = min(rcv_batch_len, count - rcv_count)  # 정확히 count 개수만큼 받기 위함
+            # 정확히 count 개수만큼 받기 위함
+            rcv_batch_len = min(rcv_batch_len, count - rcv_count)
             for i in range(rcv_batch_len):
                 for col_idx, col in enumerate(rq_column):
-                    rcv_data[col].append(self.objStockChart.GetDataValue(col_idx, i))
+                    rcv_data[col].append(
+                        self.objStockChart.GetDataValue(col_idx, i))
 
             if len(rcv_data['date']) == 0:  # 데이터가 없는 경우
                 print(code, '데이터 없음')
@@ -125,7 +128,7 @@ class CpStockChart:
         """
         :param code: 종목 코드
         :param dwm: 'm':분봉, 'T':틱봉
-        :param tick_range: 1분봉 or 5분봉, ...
+        :param tick_range: 1분봉 or 3분봉, ...
         :param count: 요청할 데이터 개수
         :param caller: 이 메소드 호출한 인스턴스. 결과 데이터를 caller의 멤버로 전달하기 위함
         :return:
@@ -134,26 +137,28 @@ class CpStockChart:
         self.objStockChart.SetInputValue(1, ord('2'))  # 개수로 받기
         self.objStockChart.SetInputValue(4, count)  # 조회 개수
         if ohlcv_only:
-            self.objStockChart.SetInputValue(5, [0, 1, 2, 3, 4, 5, 8])  # 요청항목 - 날짜, 시간,시가,고가,저가,종가,거래량
-            rq_column = ('date', 'time', 'open', 'high', 'low', 'close', 'volume')
+            # 요청항목 - 날짜, 시간,시가,고가,저가,종가,거래량
+            self.objStockChart.SetInputValue(5, [0, 1, 2, 3, 4, 5, 8])
+            rq_column = ('date', 'time', 'open', 'high',
+                         'low', 'close', 'volume')
         else:
             # 요청항목
-            self.objStockChart.SetInputValue(5, [0, # 날짜
-                                                1, # 시간
-                                                2, # 시가
-                                                3, # 고가
-                                                4, # 저가
-                                                5, # 종가
-                                                8, # 거래량
-                                                12,  #상장주식수
-                                                14,  # 외국인주문한도수량
-                                                16,  # 외국인현보유수량
-                                                17,  # 외국인현보유비율
-                                                20,  # 기관순매수
-                                                21,  # 기관누적순매수
-                                                ])
+            self.objStockChart.SetInputValue(5, [0,  # 날짜
+                                                 1,  # 시간
+                                                 2,  # 시가
+                                                 3,  # 고가
+                                                 4,  # 저가
+                                                 5,  # 종가
+                                                 8,  # 거래량
+                                                 12,  # 상장주식수
+                                                 14,  # 외국인주문한도수량
+                                                 16,  # 외국인현보유수량
+                                                 17,  # 외국인현보유비율
+                                                 20,  # 기관순매수
+                                                 21,  # 기관누적순매수
+                                                 ])
             # 요청한 항목들을 튜플로 만들어 사용
-            rq_column = ('date', 'time', 'open', 'high', 'low', 'close', 'volume', 
+            rq_column = ('date', 'time', 'open', 'high', 'low', 'close', 'volume',
                          '상장주식수', '외국인주문한도수량', '외국인현보유수량', '외국인현보유비율', '기관순매수', '기관누적순매수')
 
         self.objStockChart.SetInputValue(6, dwm)  # '차트 주기 - 분/틱
@@ -171,20 +176,24 @@ class CpStockChart:
             time.sleep(0.25)  # 시간당 RQ 제한으로 인해 장애가 발생하지 않도록 딜레이를 줌
 
             rcv_batch_len = self.objStockChart.GetHeaderValue(3)  # 받아온 데이터 개수
-            rcv_batch_len = min(rcv_batch_len, count - rcv_count)  # 정확히 count 개수만큼 받기 위함
+            # 정확히 count 개수만큼 받기 위함
+            rcv_batch_len = min(rcv_batch_len, count - rcv_count)
             for i in range(rcv_batch_len):
                 for col_idx, col in enumerate(rq_column):
-                    rcv_data[col].append(self.objStockChart.GetDataValue(col_idx, i))
+                    rcv_data[col].append(
+                        self.objStockChart.GetDataValue(col_idx, i))
 
             if len(rcv_data['date']) == 0:  # 데이터가 없는 경우
                 print(code, '데이터 없음')
                 return False
 
             # len 만큼 받은 데이터의 가장 오래된 date
-            rcv_oldest_date = int('{}{:04}'.format(rcv_data['date'][-1], rcv_data['time'][-1]))
+            rcv_oldest_date = int('{}{:04}'.format(
+                rcv_data['date'][-1], rcv_data['time'][-1]))
 
             rcv_count += rcv_batch_len
-            caller.return_status_msg = '{} / {}(maximum)'.format(rcv_count, count)
+            caller.return_status_msg = '{} / {}(maximum)'.format(
+                rcv_count, count)
 
             # 서버가 가진 모든 데이터를 요청한 경우 break.
             # self.objStockChart.Continue 는 개수로 요청한 경우
@@ -197,12 +206,14 @@ class CpStockChart:
 
         # 분봉의 경우 날짜와 시간을 하나의 문자열로 합친 후 int로 변환
         rcv_data['date'] = list(map(lambda x, y: int('{}{:04}'.format(x, y)),
-                 rcv_data['date'], rcv_data['time']))
+                                    rcv_data['date'], rcv_data['time']))
         del rcv_data['time']
         caller.rcv_data = rcv_data  # 받은 데이터를 caller의 멤버에 저장
         return True
 
 # 종목코드 관리하는 클래스
+
+
 class CpCodeMgr:
     def __init__(self):
         self.objCodeMgr = win32com.client.Dispatch("CpUtil.CpCodeMgr")

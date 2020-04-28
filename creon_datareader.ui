@@ -165,7 +165,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>./db/stock_price(5min).db</string>
+      <string>./db/stock_price(3min).db</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_5">
@@ -282,7 +282,7 @@
      </item>
      <item>
       <property name="text">
-       <string>5분봉</string>
+       <string>3분봉</string>
       </property>
      </item>
      <item>

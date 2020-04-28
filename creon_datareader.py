@@ -37,7 +37,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timer_1s.start(1000)
         self.timer_1s.timeout.connect(self.timeout_1s)
 
-
         # 서버에 존재하는 종목코드 리스트와 로컬DB에 존재하는 종목코드 리스트
         self.sv_code_df = pd.DataFrame()
         self.db_code_df = pd.DataFrame()
@@ -65,7 +64,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pushButton_3.clicked.connect(self.update_price_db_filtered)
         self.pushButton_4.clicked.connect(self.update_price_db)
 
-        # comboBox 1분/5분/일봉/... 변경될 시 실행될 함수 연결
+        # comboBox 1분/3분/일봉/... 변경될 시 실행될 함수 연결
         self.comboBox.currentIndexChanged.connect(self.on_comboBox_changed)
 
     def closeEvent(self, a0: QtGui.QCloseEvent):
@@ -81,9 +80,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def connect_code_list_view(self):
         # 서버 종목 정보 가져와서 dataframe으로 저장
-        sv_code_list = self.objCodeMgr.get_code_list(1) + self.objCodeMgr.get_code_list(2)
+        sv_code_list = self.objCodeMgr.get_code_list(
+            1) + self.objCodeMgr.get_code_list(2)
         sv_name_list = list(map(self.objCodeMgr.get_code_name, sv_code_list))
-        self.sv_code_df = pd.DataFrame({'종목코드': sv_code_list,'종목명': sv_name_list},
+        self.sv_code_df = pd.DataFrame({'종목코드': sv_code_list, '종목명': sv_name_list},
                                        columns=('종목코드', '종목명'))
 
         self.db_path = self.lineEdit_4.text()
@@ -104,31 +104,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         db_latest_list = []
         for db_code in db_code_list:
-            cursor.execute("SELECT date FROM {} ORDER BY date DESC LIMIT 1".format(db_code))
+            cursor.execute(
+                "SELECT date FROM {} ORDER BY date DESC LIMIT 1".format(db_code))
             db_latest_list.append(cursor.fetchall()[0][0])
 
         # 현재 db에 저장된 'date' column의 단위(분/일) 확인
         # 한 db 파일에 분봉 데이터와 일봉 데이터가 섞이지 않게 하기 위함
         if db_latest_list:
-            cursor.execute("SELECT date FROM {} ORDER BY date ASC LIMIT 2".format(db_code_list[0]))
+            cursor.execute(
+                "SELECT date FROM {} ORDER BY date ASC LIMIT 2".format(db_code_list[0]))
             date0, date1 = cursor.fetchall()
 
             # 날짜가 분 단위 인 경우
             if date0[0] > 99999999:
-                if date1[0] - date0[0] == 5: # 5분 간격인 경우
+                if date1[0] - date0[0] == 3:  # 3분 간격인 경우
                     self.comboBox.setCurrentIndex(1)
-                else: # 1분 간격인 경우
+                else:  # 1분 간격인 경우
                     self.comboBox.setCurrentIndex(0)
-            elif date0[0]%100 == 0: # 월봉인 경우
+            elif date0[0] % 100 == 0:  # 월봉인 경우
                 self.comboBox.setCurrentIndex(4)
-            elif date0[0]%10 == 0: # 주봉인 경우
+            elif date0[0] % 10 == 0:  # 주봉인 경우
                 self.comboBox.setCurrentIndex(3)
-            else: # 일봉인 경우
+            else:  # 일봉인 경우
                 self.comboBox.setCurrentIndex(2)
 
         self.db_code_df = pd.DataFrame(
-                {'종목코드': db_code_list, '종목명': db_name_list, '갱신날짜': db_latest_list},
-                columns=('종목코드', '종목명', '갱신날짜'))
+            {'종목코드': db_code_list, '종목명': db_name_list, '갱신날짜': db_latest_list},
+            columns=('종목코드', '종목명', '갱신날짜'))
 
         self.sv_view_model = PandasModel(self.sv_code_df)
         self.db_view_model = PandasModel(self.db_code_df)
@@ -146,13 +148,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.f_sv_code_df = pd.DataFrame(columns=('종목코드', '종목명'))
         for i, row in self.sv_code_df.iterrows():
             if keyword in row['종목코드'] + row['종목명']:
-                self.f_sv_code_df = self.f_sv_code_df.append(row, ignore_index=True)
+                self.f_sv_code_df = self.f_sv_code_df.append(
+                    row, ignore_index=True)
 
         if reset:
             self.f_db_code_df = pd.DataFrame(columns=('종목코드', '종목명', '갱신날짜'))
         for i, row in self.db_code_df.iterrows():
             if keyword in row['종목코드'] + row['종목명']:
-                self.f_db_code_df = self.f_db_code_df.append(row, ignore_index=True)
+                self.f_db_code_df = self.f_db_code_df.append(
+                    row, ignore_index=True)
 
         self.f_sv_view_model = PandasModel(self.f_sv_code_df)
         self.f_db_view_model = PandasModel(self.f_db_code_df)
@@ -178,7 +182,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             statusbar_msg = time_msg
         else:
             statusbar_msg = time_msg + " | " + self.update_status_msg + \
-                            " | " + self.return_status_msg
+                " | " + self.return_status_msg
 
         self.statusbar.showMessage(statusbar_msg)
 
@@ -194,7 +198,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 다운로드 한 이후로는 설정 값 변경 불가
         self.comboBox.setEnabled(False)
         self.checkBox.setEnabled(False)
-        
+
         if filtered:
             fetch_code_df = self.f_sv_code_df
             db_code_df = self.f_db_code_df
@@ -205,36 +209,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not is_market_open():
             latest_date = available_latest_date()
             # 이미 DB 데이터가 최신인 종목들은 가져올 목록에서 제외한다
-            already_up_to_date_codes = db_code_df.loc[db_code_df['갱신날짜']==latest_date]['종목코드'].values
-            fetch_code_df = fetch_code_df.loc[fetch_code_df['종목코드'].apply(lambda x: x not in already_up_to_date_codes)]
+            already_up_to_date_codes = db_code_df.loc[db_code_df['갱신날짜']
+                                                      == latest_date]['종목코드'].values
+            fetch_code_df = fetch_code_df.loc[fetch_code_df['종목코드'].apply(
+                lambda x: x not in already_up_to_date_codes)]
 
-        if self.comboBox.currentIndex() == 0: # 1분봉
+        if self.comboBox.currentIndex() == 0:  # 1분봉
             tick_unit = '분봉'
             count = 200000  # 서버 데이터 최대 reach 약 18.5만 이므로 (18/02/25 기준)
             tick_range = 1
-        elif self.comboBox.currentIndex() == 1: # 5분봉
+        elif self.comboBox.currentIndex() == 1:  # 3분봉
             tick_unit = '분봉'
-            count = 100000
-            tick_range = 5
-        elif self.comboBox.currentIndex() == 2: # 일봉
+            count = 200000
+            tick_range = 3
+        elif self.comboBox.currentIndex() == 2:  # 일봉
             tick_unit = '일봉'
             count = 10000  # 10000개면 현재부터 1980년 까지의 데이터에 해당함. 충분.
             tick_range = 1
-        elif self.comboBox.currentIndex() == 3: # 주봉
+        elif self.comboBox.currentIndex() == 3:  # 주봉
             tick_unit = '주봉'
             count = 2000
-        else: # 월봉
+        else:  # 월봉
             tick_unit = '월봉'
             count = 500
 
         if self.checkBox.isChecked():
-            columns=['open', 'high', 'low', 'close', 'volume']
+            columns = ['open', 'high', 'low', 'close', 'volume']
             ohlcv_only = True
         else:
-            columns=['open', 'high', 'low', 'close', 'volume',
-                     '상장주식수', '외국인주문한도수량', '외국인현보유수량', '외국인현보유비율', '기관순매수', '기관누적순매수']
+            columns = ['open', 'high', 'low', 'close', 'volume',
+                       '상장주식수', '외국인주문한도수량', '외국인현보유수량', '외국인현보유비율', '기관순매수', '기관누적순매수']
             ohlcv_only = False
-
 
         with sqlite3.connect(self.db_path) as con:
             cursor = con.cursor()
@@ -242,11 +247,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             for i in tqdm_range:
                 code = fetch_code_df.iloc[i]
                 self.update_status_msg = '[{}] {}'.format(code[0], code[1])
-                tqdm_range.set_description(preformat_cjk(self.update_status_msg, 25))
+                tqdm_range.set_description(
+                    preformat_cjk(self.update_status_msg, 25))
 
                 from_date = 0
                 if code[0] in self.db_code_df['종목코드'].tolist():
-                    cursor.execute("SELECT date FROM {} ORDER BY date DESC LIMIT 1".format(code[0]))
+                    cursor.execute(
+                        "SELECT date FROM {} ORDER BY date DESC LIMIT 1".format(code[0]))
                     from_date = cursor.fetchall()[0][0]
 
                 if tick_unit == '일봉':  # 일봉 데이터 받기
@@ -255,14 +262,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 elif tick_unit == '분봉':  # 분봉 데이터 받기
                     if self.objStockChart.RequestMT(code[0], ord('m'), tick_range, count, self, from_date, ohlcv_only) == False:
                         continue
-                elif tick_unit == '주봉':  #주봉 데이터 받기
+                elif tick_unit == '주봉':  # 주봉 데이터 받기
                     if self.objStockChart.RequestDWM(code[0], ord('W'), count, self, from_date, ohlcv_only) == False:
                         continue
-                elif tick_unit == '월봉':  #주봉 데이터 받기
+                elif tick_unit == '월봉':  # 주봉 데이터 받기
                     if self.objStockChart.RequestDWM(code[0], ord('M'), count, self, from_date, ohlcv_only) == False:
                         continue
 
-                df = pd.DataFrame(self.rcv_data, columns=columns, index=self.rcv_data['date'])
+                df = pd.DataFrame(self.rcv_data, columns=columns,
+                                  index=self.rcv_data['date'])
 
                 # 기존 DB와 겹치는 부분 제거
                 if from_date != 0:
