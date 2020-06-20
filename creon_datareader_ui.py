@@ -94,6 +94,7 @@ class Ui_MainWindow(object):
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
+        self.comboBox.addItem("")
         self.checkBox = QtWidgets.QCheckBox(self.groupBox_4)
         self.checkBox.setEnabled(False)
         self.checkBox.setGeometry(QtCore.QRect(540, 60, 116, 22))
@@ -140,6 +141,7 @@ class Ui_MainWindow(object):
         self.comboBox.setItemText(2, _translate("MainWindow", "일봉"))
         self.comboBox.setItemText(3, _translate("MainWindow", "주봉"))
         self.comboBox.setItemText(4, _translate("MainWindow", "월봉"))
+        self.comboBox.setItemText(5, _translate("MainWindow", "30분봉"))
         self.checkBox.setText(_translate("MainWindow", "ohlcv only"))
         self.textBrowser.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
                                             "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"

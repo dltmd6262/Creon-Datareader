@@ -300,6 +300,11 @@
        <string>월봉</string>
       </property>
      </item>
+     <item>
+      <property name="text">
+       <string>30분봉</string>
+      </property>
+     </item>
     </widget>
     <widget class="QCheckBox" name="checkBox">
      <property name="enabled">

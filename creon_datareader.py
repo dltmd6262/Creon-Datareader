@@ -119,6 +119,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if date0[0] > 99999999:
                 if date1[0] - date0[0] == 3:  # 3분 간격인 경우
                     self.comboBox.setCurrentIndex(1)
+                elif date1[0] - date0[0] == 30:  # 30분 간격인 경우
+                    self.comboBox.setCurrentIndex(5)
                 else:  # 1분 간격인 경우
                     self.comboBox.setCurrentIndex(0)
             elif date0[0] % 100 == 0:  # 월봉인 경우
@@ -222,6 +224,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             tick_unit = '분봉'
             count = 200000
             tick_range = 3
+        elif self.comboBox.currentIndex() == 5:  # 30분봉
+            tick_unit = '분봉'
+            count = 500000
+            tick_range = 30
         elif self.comboBox.currentIndex() == 2:  # 일봉
             tick_unit = '일봉'
             count = 10000  # 10000개면 현재부터 1980년 까지의 데이터에 해당함. 충분.
